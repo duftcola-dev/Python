@@ -1,7 +1,7 @@
 import requests
 from requests import HTTPError
 from json import JSONDecodeError
-from Source.Meta_Request import IRequest
+from .Source.Meta_Request import IRequest
 
 
 

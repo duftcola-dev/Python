@@ -33,3 +33,8 @@ class MetaLogMessage(metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
+    @abc.abstractstaticmethod
+    def GetInstance(self):
+
+        """Returns an instance of the class log """
+        raise NotImplementedError

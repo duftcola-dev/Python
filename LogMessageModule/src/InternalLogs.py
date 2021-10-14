@@ -6,7 +6,7 @@ import datetime
 from .interface.MetaLog import MetaLogMessage
 
 # Author : Robin
-# Description : General purpose log class  moslty meant to be inherited. 
+# Description : General purpose log class  mostly meant to be inherited and used within another class. 
 # Tested : yes
 # last update : 1/9/2021
 
@@ -17,14 +17,7 @@ class Logs(MetaLogMessage):
         pass
 
 
-    def LogMessage(self, message_type: str, message: str):
-
-        self.__LogMessage(message_type,message)
-
-      
-         
-
-    def __LogMessage(self,message_type,message):
+    def LogMessage(self,message_type,message):
 
         self.__type=["warning","error","info"]
     
