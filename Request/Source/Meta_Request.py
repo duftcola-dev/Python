@@ -5,9 +5,9 @@ class IRequest(metaclass=abc.ABCMeta):
     @classmethod
     def __subclasshook__(cls,subclass):
         return (
-            hasattr(subclass,"_Ping")and callable(subclass._Ping) and
-            hasattr(subclass,"_Get")and callable(subclass._Get) and 
-            hasattr(subclass,"_Post")and callable(subclass._Post) 
+            hasattr(subclass,"Ping")and callable(subclass.Ping) and
+            hasattr(subclass,"Get")and callable(subclass.Get) and 
+            hasattr(subclass,"Post")and callable(subclass.Post) 
         )
 
     @abc.abstractmethod

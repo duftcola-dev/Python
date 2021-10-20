@@ -11,9 +11,9 @@ from .src._CheckType import CheckType
 # Author: Robin
 # Description : This module containes different implementations of the log class
 # to be used at convenience . 
-# A general purpose method for loggin messages 
-# A general purpose factory method that returns log class instance
-# A singleton class for an unique implementation of the log class
+# A general purpose method for loggin messages .
+# A general purpose factory method that returns log class instance.
+# A singleton class for an unique implementation of the log class.
 # version 3.0
 # tested : yes
 # last update: 14/10/2021
@@ -24,8 +24,11 @@ class Logs(MetaLogMessage):
     __instance=None
 
     def __init__(self,log_file="") -> None:
+
         if Logs.__instance != None:
             raise Exception("Logs can only be implemented once")
+
+        Logs.__instance=self
         self.log_file=log_file
         
 
