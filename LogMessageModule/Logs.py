@@ -30,7 +30,7 @@ class Logs(MetaLogMessage):
 
         self.__message=""
         Logs.__instance=self
-        self.log_file=log_file
+        self.__log_file=log_file
         
 
     @staticmethod
@@ -43,17 +43,18 @@ class Logs(MetaLogMessage):
 
 
     
-    def LogMessage(self,message_type,message):
+    def LogMessage(self,message_type,message:str):
 
         self.__type=["warning","error","info"]
     
         if message_type in self.__type:
             
             date=self.__GetDate()
+            
             self.__message=""
             self.__message=date+" | "+message_type+" | "+message+"\n"
             
-            if message_type == "error" and self.log_file != None:
+            if message_type == "error" and self.__log_file != None:
                 self.__SaveLogMessage(self.__message)
 
             sys.stdout.write(self.__message)
@@ -63,7 +64,7 @@ class Logs(MetaLogMessage):
     def __SaveLogMessage(self,message):
         
         try:
-            file=open(self.log_file,"a")
+            file=open(self.__log_file,"a")
             file.write(message)
             file.close()
         except FileExistsError:

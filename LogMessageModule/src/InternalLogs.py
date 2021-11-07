@@ -19,7 +19,7 @@ class Logs():
         pass
 
 
-    def LogMessage(self,message_type,message):
+    def LogMessage(self,message_type,message:str):
 
         self.__type=["warning","error","info"]
     
@@ -31,7 +31,8 @@ class Logs():
             self.__message=date+" | "+message_type+" | "+message+"\n"
 
             if message_type == "error" and self.__log_file !=None:
-                self.__SaveLogMessage(message)
+                self.__SaveLogMessage(self.__message)
+
             sys.stdout.write(self.__message)
 
 
