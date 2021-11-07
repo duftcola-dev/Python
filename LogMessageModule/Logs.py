@@ -14,20 +14,21 @@ from .src._CheckType import CheckType
 # A general purpose method for loggin messages .
 # A general purpose factory method that returns log class instance.
 # A singleton class for an unique implementation of the log class.
-# version 3.0
+# version 3.1
 # tested : yes
-# last update: 14/10/2021
+# last update: 7/11/2021
 
 #Singleton Log class
 class Logs(MetaLogMessage):
 
     __instance=None
 
-    def __init__(self,log_file="") -> None:
+    def __init__(self,log_file=None) -> None:
 
         if Logs.__instance != None:
             raise Exception("Logs can only be implemented once")
 
+        self.__message=""
         Logs.__instance=self
         self.log_file=log_file
         
@@ -49,29 +50,29 @@ class Logs(MetaLogMessage):
         if message_type in self.__type:
             
             date=self.__GetDate()
-
+            self.__message=""
             self.__message=date+" | "+message_type+" | "+message+"\n"
-            self.__SaveLogMessage(self.__message,message_type)
+            
+            if message_type == "error" and self.log_file != None:
+                self.__SaveLogMessage(self.__message)
 
             sys.stdout.write(self.__message)
 
 
 
-    def __SaveLogMessage(self,message,message_type):
+    def __SaveLogMessage(self,message):
         
-        if message_type =="error" and self.log_file != "":
+        try:
+            file=open(self.log_file,"a")
+            file.write(message)
+            file.close()
+        except FileExistsError:
 
-            try:
-                file=open(self.log_file,"a")
-                file.write(message)
-                file.close()
-            except FileExistsError:
+            sys.stdout.write("ERROR , log class cannot find log file ")
 
-                sys.stdout.write("ERROR , log class cannot find log file ")
+        except Exception as err:
 
-            except Exception as err:
-
-                sys.stdout.write("Log class : Unknown error"+str(err)) 
+            sys.stdout.write("Log class : Unknown error"+str(err)) 
 
 
 
@@ -97,6 +98,7 @@ def GetLogInstance(log_file_path=""):
     logs=Int_Logs(log_file=log_file_path)
 
     return logs
+
 
 #General purpose log method
 @CheckType

@@ -3,17 +3,19 @@ import os
 from inspect import  currentframe, getframeinfo
 import threading
 import datetime
-from .interface.MetaLog import MetaLogMessage
+
 
 # Author : Robin
 # Description : General purpose log class  mostly meant to be inherited and used within another class. 
 # Tested : yes
 # last update : 1/9/2021
 
-class Logs(MetaLogMessage):
+class Logs():
 
 
-    def __init__(self) -> None:
+    def __init__(self,log_file:str=None) -> None:
+        self.__message=""
+        self.__log_file=log_file
         pass
 
 
@@ -25,8 +27,34 @@ class Logs(MetaLogMessage):
             
             date=self.__GetDate()
 
+            self.__message=""
             self.__message=date+" | "+message_type+" | "+message+"\n"
+
+            if message_type == "error" and self.__log_file !=None:
+                self.__SaveLogMessage(message)
             sys.stdout.write(self.__message)
+
+
+
+    def __SaveLogMessage(self,message):
+        
+        try:
+            file=open(self.__log_file,"a")
+            file.write(message)
+            file.close()
+        
+        except FileExistsError as err:
+
+            print(f" ERR file doesnt exist {err}")
+
+        except FileNotFoundError as err:
+
+            print(f"ERR File not found : {err}")
+
+
+        except Exception:
+
+            print("Err unknown exception")
 
 
 
