@@ -2,6 +2,7 @@ import abc
 
 class IRequest(metaclass=abc.ABCMeta):
 
+
     @classmethod
     def __subclasshook__(cls,subclass):
         return (
@@ -27,7 +28,7 @@ class IRequest(metaclass=abc.ABCMeta):
 
         If url is not provided , this method returns False,
         if data in case is provided is not a type dict then returns False.
-        Header is optional.
+        Header and params are optional for the get method.
         """
         raise NotImplementedError
 

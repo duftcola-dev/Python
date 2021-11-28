@@ -16,14 +16,42 @@ from .Source.Meta_Request import IRequest
 
 class Request(IRequest):
 
+    """Description : 
+    General purpose http request module.
+    The module is quite simple to use. It accepts 4 types of operations so far.
+    This module is a singleton and can only be implemented once
+
+    *Get
+    *Post
+    *Put
+    *Ping
+
+    Ping is a GET method for testing connections urls.
+    Parameres for GET are optional.
+
+    The class accepts a configuration in the form of dict passed as optional
+    parameter.
+
+    The class acccepts a log message instance passed as optional parameter.
+
+    Args :
+
+    -->configuration:dict (optional)
+    -->log:log_message_instance(optional)
+    
+    """
+
+
     __instance=None
 
-    def __init__(self,configuration:dict=None) -> None:
+    def __init__(self,configuration:dict=None,log=None) -> None:
 
         if Request.__instance != None:
             raise Exception("Request instance can only be implemented once!")
-        self.configuration_field="requests"
-        self.json_response=False
+    
+        self.__json_response=False
+        self.__logs=log
+
         self.__GetConfiguration(configuration)
 
         Request.__instance=self
@@ -43,21 +71,21 @@ class Request(IRequest):
 
 
 
-    def Get(self,url:str,header:dict=None,data:dict=None)->dict:
+    def Get(self,url:str,header:dict=None,params:dict=None)->dict:
 
-        self.__HttpMethods("GET",url,header,data)
-
-
-
-    def Post(self,url:str,header:dict=None,data:dict=None)->dict:
-
-        self.__HttpMethods("POST",url,header,data)
+        self.__HttpMethods("GET",url,header,params)
 
 
 
-    def Put(self,url:str,header:dict=None,data:dict=None)->dict:
+    def Post(self,url:str,header:dict=None,params:dict=None)->dict:
 
-        self.__HttpMethods("PUT",url,header,data)
+        self.__HttpMethods("POST",url,header,params)
+
+
+
+    def Put(self,url:str,header:dict=None,params:dict=None)->dict:
+
+        self.__HttpMethods("PUT",url,header,params)
 
 
 
@@ -81,7 +109,7 @@ class Request(IRequest):
 
             self.__PUT(url,header=header,data=data)
 
-        if self.json_response==False:
+        if self.__json_response==False:
 
             return self.__FormatResponse(response)
         else:
@@ -101,7 +129,8 @@ class Request(IRequest):
 
         if method != "GET" and (data=="" or data==None): # data is only optional for get
             return False
-        else:
+
+        if method != "GET":
             if self.__CheckDictType(data)==False:# data must be a dict for POST/PUT
                 return False
            
@@ -238,13 +267,25 @@ class Request(IRequest):
 
         if configuration==None:
             #--do nothing -- not configuration used--#
-            pass
-        else:
-            if type(configuration) is dict:
+            return
+        
+        result=configuration.get("REQUEST",None)
 
-                result=configuration.get("response_type",0)
-                if result==0:
-                    pass #item doesn ont exists
-                else:
-                    if result=="json":
-                        self.json_response=True
+        if result!=None and type(result) is dict:
+
+            if result.get("response_type")=="json":
+                self.__json_response=True
+
+
+
+    def __LogMessage(self,message,message_type=""):
+
+        if self.__logs==None:
+            print(message+"\n")
+        else:
+            self.__logs.LogMessage(message,message_type)
+
+
+
+
+r = Request()
