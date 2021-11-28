@@ -19,7 +19,7 @@ class Request(IRequest):
     """Description : 
     General purpose http request module.
     The module is quite simple to use. It accepts 4 types of operations so far.
-    This module is a singleton and can only be implemented once
+    This module is a singleton and can only be implemented once.
 
     *Get
     *Post
@@ -30,7 +30,9 @@ class Request(IRequest):
     Parameres for GET are optional.
 
     The class accepts a configuration in the form of dict passed as optional
-    parameter.
+    parameter.Use the GetConfigurationField() to get the name of the exact field 
+    in the configuration file this class requires:
+    
 
     The class acccepts a log message instance passed as optional parameter.
 
@@ -51,6 +53,7 @@ class Request(IRequest):
     
         self.__json_response=False
         self.__logs=log
+        self.__configuration_field="REQUEST"
 
         self.__GetConfiguration(configuration)
 
@@ -87,6 +90,11 @@ class Request(IRequest):
 
         self.__HttpMethods("PUT",url,header,params)
 
+
+
+    def GetConfigurationField(self)->str:
+
+        return self.__configuration_field
 
 
 
@@ -224,7 +232,7 @@ class Request(IRequest):
 
 
 
-    def __FormatResponse(response)->dict:
+    def __FormatResponse(self,response)->dict:
 
         try:
 
@@ -245,7 +253,7 @@ class Request(IRequest):
 
 
 
-    def __FormatResponseJson(response)->dict:
+    def __FormatResponseJson(self,response)->dict:
 
         try:
             result=""
@@ -254,27 +262,23 @@ class Request(IRequest):
 
         except requests.exceptions.JSONDecodeError:
 
-            print("Response may be not json type")
+            self.__LogMessage("Request moduel -> Response may be not json type","error")
             return False
         except Exception:
 
-            print("Unkown error on json decoding operation")
+            self.__LogMessage("Request moduel -> Unknown error on json decoding operation","error")
             return False
 
 
 
     def __GetConfiguration(self,configuration):
 
-        if configuration==None:
+        if configuration==None or type(configuration) is not dict:
             #--do nothing -- not configuration used--#
             return
         
-        result=configuration.get("REQUEST",None)
-
-        if result!=None and type(result) is dict:
-
-            if result.get("response_type")=="json":
-                self.__json_response=True
+        if configuration.get("response_type",None)=="json":
+            self.__json_response=True
 
 
 
@@ -287,5 +291,3 @@ class Request(IRequest):
 
 
 
-
-r = Request()
