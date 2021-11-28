@@ -1,3 +1,4 @@
+from typing_extensions import TypedDict
 import requests
 from requests import HTTPError
 from json import JSONDecodeError
@@ -17,12 +18,14 @@ class Request(IRequest):
 
     __instance=None
 
-    def __init__(self) -> None:
+    def __init__(self,configuration:dict=None) -> None:
 
         if Request.__instance != None:
             raise Exception("Request instance can only be implemented once!")
-
+        self.configuration_field="requests"
         self.json_response=False
+        self.__GetConfiguration(configuration)
+
         Request.__instance=self
 
 
@@ -231,3 +234,17 @@ class Request(IRequest):
 
 
 
+    def __GetConfiguration(self,configuration):
+
+        if configuration==None:
+            #--do nothing -- not configuration used--#
+            pass
+        else:
+            if type(configuration) is dict:
+
+                result=configuration.get("response_type",0)
+                if result==0:
+                    pass #item doesn ont exists
+                else:
+                    if result=="json":
+                        self.json_response=True
