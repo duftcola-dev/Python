@@ -1,6 +1,6 @@
 #Adapter design pattern.
-# The adapter desing pattern  allows two or more instances with interfaces or incomplatible
-# data to work together
+# The adapter desing pattern  allows two or more instances with incompatible interfaces interfaces or incomplatible
+# data to work together . Usually the adapter pattern is created for classes that already exist but that cannot work together
 
 # we have a class that handles integers
 class Intergers:

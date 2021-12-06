@@ -1,4 +1,3 @@
-from typing_extensions import TypedDict
 import requests
 from requests import HTTPError
 from json import JSONDecodeError
@@ -8,10 +7,10 @@ from .Source.Meta_Request import IRequest
 
 #Author : Robin Viera
 #Date : 29/09/2021
-#Version : 1.0
-#Tested : No
+#Version : 2.0
+#Tested : no
 #Description : Class for general purpose http requests. Singleton class arch.
-#last update : 14/10/2021
+#last update : 6/12/2021
 
 
 class Request(IRequest):
@@ -38,7 +37,8 @@ class Request(IRequest):
 
     Args :
 
-    -->configuration:dict (optional)
+    -->configuration:dict (optional)  . Field name   : request
+    
     -->log:log_message_instance(optional)
     
     """
@@ -53,8 +53,8 @@ class Request(IRequest):
     
         self.__json_response=False
         self.__logs=log
-        self.__configuration_field="REQUEST"
-
+        self.__configuration_field="request"
+        self.__configuration_subfield=("json_response","True")
         self.__GetConfiguration(configuration)
 
         Request.__instance=self
@@ -73,101 +73,22 @@ class Request(IRequest):
         return self.__PING(url)
 
 
-
     def Get(self,url:str,header:dict=None,params:dict=None)->dict:
 
-        self.__HttpMethods("GET",url,header,params)
-
+        response=self.__GET(url,header=header,data=params)
+        return self.__ResponseHandler(response)
 
 
     def Post(self,url:str,header:dict=None,params:dict=None)->dict:
 
-        self.__HttpMethods("POST",url,header,params)
-
+        response=self.__POST(url,header=header,data=params)
+        return self.__ResponseHandler(response)
 
 
     def Put(self,url:str,header:dict=None,params:dict=None)->dict:
 
-        self.__HttpMethods("PUT",url,header,params)
-
-
-
-    def GetConfigurationField(self)->str:
-
-        return self.__configuration_field
-
-
-
-    def __HttpMethods(self,method,url,header,data):
-
-        if self.__CheckTypes(url,data)==False:
-            return False
-        
-        response=""
-        if method =="GET":
-
-            self.__GET(url,header=header,data=data)
-
-        if method =="POST":
-            
-            self.__POST(url,header=header,data=data)
-
-                
-        if method =="PUT":
-
-            self.__PUT(url,header=header,data=data)
-
-        if self.__json_response==False:
-
-            return self.__FormatResponse(response)
-        else:
-            return self.__FormatResponseJson(response)
-
-
-
-
-    def __CheckTypes(self,method:str="",url:str="",data:dict=""):
-
-
-        if method=="" or method == None :#method is mandatory
-            return False
-
-        if url == "" or url== None: #url is mandatory
-            return False
-
-        if method != "GET" and (data=="" or data==None): # data is only optional for get
-            return False
-
-        if method != "GET":
-            if self.__CheckDictType(data)==False:# data must be a dict for POST/PUT
-                return False
-           
-        if self.__CheckUrlType(url)==False:# url must be a string
-            return False
-
-        return True
-
-
-
-
-    def __CheckDictType(self,data,datatype:type)->bool:
-
-        if type(data) == datatype:
-
-            return True
-
-        return False
-
-
-
-
-    def __CheckUrlType(self,data:str)->bool:
-
-        if type(data) ==str:
-
-            return True
-
-        return False
+        response=self.__PUT(url,header=header,data=params)
+        return self.__ResponseHandler(response)
 
 
 
@@ -198,10 +119,12 @@ class Request(IRequest):
                 response=requests.get(url)
         else:
             if header==None:
+                self.__LogMessage("info",f"request : {url} {data}")
                 response=requests.get(url,params=data)
             else:
+                self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {data}")
                 response=requests.get(url,headers=header,params=data)
-
+        
         return response
 
 
@@ -211,8 +134,10 @@ class Request(IRequest):
 
         response=""
         if header==None:
+            self.__LogMessage("info",f"request : {url} {data}")
             response=requests.post(url,data=data)
         else:
+            self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {data}")
             response=requests.post(url,headers=header,data=data)
 
         return response
@@ -224,12 +149,24 @@ class Request(IRequest):
 
         response=""
         if header == None:
+            self.__LogMessage("info",f"request : {url} {data}")
             response=requests.put(url,data=data)
         else:
+            self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {data}")
             response=requests.put(url,headers=header,data=data)
         return response
 
 
+
+    def __ResponseHandler(self,response):
+
+        foramted_response=None
+        if self.__json_response==True:
+            foramted_response=self.__FormatResponseJson(response)
+        else:
+            foramted_response=self.__FormatResponse(response)
+
+        return foramted_response
 
 
     def __FormatResponse(self,response)->dict:
@@ -242,12 +179,16 @@ class Request(IRequest):
             result["text"]=response.text
             result["encoding"]=response.encoding
             result["bcontent"]=response.content
-            result["content"]=response.content.decode(response.encoding)
+            if result["encoding"] != None:
+                result["content"]=response.content.decode(response.encoding)
+            else:
+                result["content"]=response.content
 
+            self.__LogMessage("info",f"response : {response.status_code}")
             return result
 
-        except Exception:
-
+        except Exception as err:
+            self.__LogMessage("error",f"Error while formating response : {err}")
             return False
         
 
@@ -256,17 +197,18 @@ class Request(IRequest):
     def __FormatResponseJson(self,response)->dict:
 
         try:
-            result=""
+    
+            self.__LogMessage("info",f"response : {response.status_code}")
             result=response.json()
             return result
 
-        except requests.exceptions.JSONDecodeError:
+        except JSONDecodeError:
 
-            self.__LogMessage("Request moduel -> Response may be not json type","error")
+            self.__LogMessage("error","Request module -> Response may be not json type")
             return False
         except Exception:
 
-            self.__LogMessage("Request moduel -> Unknown error on json decoding operation","error")
+            self.__LogMessage("error","Request module -> Unknown error on json decoding operation")
             return False
 
 
@@ -274,20 +216,31 @@ class Request(IRequest):
     def __GetConfiguration(self,configuration):
 
         if configuration==None or type(configuration) is not dict:
-            #--do nothing -- not configuration used--#
+            self.__LogMessage("info","Request module -> no configuration provided")
             return
-        
-        if configuration.get("response_type",None)=="json":
+
+        http_configuration=configuration.get(self.__configuration_field)
+
+        if http_configuration == None:
+            self.__LogMessage("warning","Request module -> Configuration not found")
+            return
+
+        if http_configuration.get(self.__configuration_subfield[0],None)==self.__configuration_subfield[1]:
+
             self.__json_response=True
+            self.__LogMessage("info","Request module -> configuration loaded. Set to format json reponse")
+        else:
+            self.__LogMessage("warning","Request module -> Response type format configuration not found")
 
 
 
-    def __LogMessage(self,message,message_type=""):
+
+    def __LogMessage(self,message_type,message):
 
         if self.__logs==None:
             print(message+"\n")
         else:
-            self.__logs.LogMessage(message,message_type)
+            self.__logs.LogMessage(message_type,message)
 
 
 
