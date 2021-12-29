@@ -1,29 +1,32 @@
 import requests
+from typing import Optional,Tuple
 from requests import HTTPError
 from json import JSONDecodeError
 from .Source.Meta_Request import IRequest
 
 
 
-#Author : Robin Viera
-#Date : 29/09/2021
-#Version : 2.0
-#Tested : no
-#Description : Class for general purpose http requests. Singleton class arch.
-#last update : 6/12/2021
-
-
 class Request(IRequest):
 
-    """Description : 
-    General purpose http request module.
-    The module is quite simple to use. It accepts 4 types of operations so far.
-    This module is a singleton and can only be implemented once.
+    """General purpose http module.
 
-    *Get
-    *Post
-    *Put
-    *Ping
+    Author : Robin Viera
+    Date : 29/09/2021
+    Version : 2.0
+    Tested : no
+    last update : 6/12/2021
+    
+    Description
+    -----------
+
+        General purpose http request module.
+        The module is quite simple to use. It accepts 4 types of operations so far.
+        This module is a singleton and can only be implemented once.
+
+        - Get
+        - Post
+        - Put
+        - Ping
 
     Ping is a GET method for testing connections urls.
     Parameres for GET are optional.
@@ -32,29 +35,36 @@ class Request(IRequest):
     parameter.Use the GetConfigurationField() to get the name of the exact field 
     in the configuration file this class requires:
     
-
     The class acccepts a log message instance passed as optional parameter.
 
-    Args :
+    Parameters
+    ----------
 
-    -->configuration:dict (optional)  . Field name   : request
+    - configuration : dict (optional)
+        Configuration file content as a dict.
     
-    -->log:log_message_instance(optional)
+    - log : log_message_instance (optional)
+        Instance of log message class.
+
+    Raises
+    ------
+
+
     
     """
 
 
     __instance=None
 
-    def __init__(self,configuration:dict=None,log=None) -> None:
+    def __init__(self,configuration:Optional[dict] = None, log : Optional[object] = None) -> None:
 
         if Request.__instance != None:
             raise Exception("Request instance can only be implemented once!")
     
-        self.__json_response=False
+        self.__json_response : bool=False
         self.__logs=log
-        self.__configuration_field="request"
-        self.__configuration_subfield=("json_response","True")
+        self.__configuration_field : str="request"
+        self.__configuration_subfield : Tuple=("json_response","True")
         self.__GetConfiguration(configuration)
 
         Request.__instance=self
@@ -73,13 +83,13 @@ class Request(IRequest):
         return self.__PING(url)
 
 
-    def Get(self,url:str,header:dict=None,params:dict=None)->dict:
+    def Get(self,url:str,header : Optional[dict] = None,params : Optional[dict] = None, auth=None)->dict:
 
-        response=self.__GET(url,header=header,data=params)
+        response=self.__GET(url,header=header,params=params,auth=auth)
         return self.__ResponseHandler(response)
 
 
-    def Post(self,url:str,header:dict=None,params:dict=None)->dict:
+    def Post(self,url:str,header : Optional[dict] = None, params : Optional[dict] = None)->dict:
 
         response=self.__POST(url,header=header,data=params)
         return self.__ResponseHandler(response)
@@ -112,18 +122,18 @@ class Request(IRequest):
 
 
 
-    def __GET(self,url:str,header:dict=None,data:dict=None):
+    def __GET(self,url:str,header:dict=None,params:dict=None, auth = None):
 
         response=""
-        if data==None :
+        if params==None :
                 response=requests.get(url)
         else:
             if header==None:
-                self.__LogMessage("info",f"request : {url} {data}")
-                response=requests.get(url,params=data)
+                self.__LogMessage("info",f"request : {url} {params}")
+                response=requests.get(url,params=params)
             else:
-                self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {data}")
-                response=requests.get(url,headers=header,params=data)
+                self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {params}")
+                response=requests.get(url,headers=header,params=params,auth=auth)
         
         return response
 
@@ -160,16 +170,17 @@ class Request(IRequest):
 
     def __ResponseHandler(self,response):
 
-        foramted_response=None
+        response_content=None
+
         if self.__json_response==True:
-            foramted_response=self.__FormatResponseJson(response)
+            response_content=self.__GetJsonContent(response)
         else:
-            foramted_response=self.__FormatResponse(response)
+            response_content=self.__GetFullResponse(response)
 
-        return foramted_response
+        return response_content
 
 
-    def __FormatResponse(self,response)->dict:
+    def __GetFullResponse(self,response)->dict:
 
         try:
 
@@ -179,6 +190,7 @@ class Request(IRequest):
             result["text"]=response.text
             result["encoding"]=response.encoding
             result["bcontent"]=response.content
+            result["json"]=response.json()
             if result["encoding"] != None:
                 result["content"]=response.content.decode(response.encoding)
             else:
@@ -193,8 +205,7 @@ class Request(IRequest):
         
 
 
-
-    def __FormatResponseJson(self,response)->dict:
+    def __GetJsonContent(self,response)->dict:
 
         try:
     
@@ -206,6 +217,7 @@ class Request(IRequest):
 
             self.__LogMessage("error","Request module -> Response may be not json type")
             return False
+
         except Exception:
 
             self.__LogMessage("error","Request module -> Unknown error on json decoding operation")

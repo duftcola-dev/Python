@@ -1,40 +1,76 @@
-
-import threading
 import datetime
 import sys
-from typing import ForwardRef
+from typing import Optional
 from .src.interface.MetaLog import MetaLogMessage
-from .src.InternalLogs import Logs as Int_Logs
 from .src._CheckType import CheckType
 
 
 # Author: Robin
-# Description : This module containes different implementations of the log class
-# to be used at convenience . 
+# Description : This module contains a . 
 # A general purpose method for loggin messages .
 # A general purpose factory method that returns log class instance.
 # A singleton class for an unique implementation of the log class.
 # version 3.1
 # tested : yes
-# last update: 7/11/2021
+# last update: 26/12/2021
 
-#Singleton Log class
 class Logs(MetaLogMessage):
+
+    """General purpose log class.
+
+        Author : Robin
+        version : 3.2
+        tested : yes
+        last update : 26/12/2021
+    
+    Description
+    -----------
+
+        General purpose log class. This class is a singleton , can only be declared once.
+        In order to use this class in an application make a declaration and used the method 
+        GetInstance to get  a reference to the instance of this class.
+
+        The class accepts an url to a log file as optional parameter however it makes no validation if the url
+        exists, only raises exeption if the logging process fails.
+
+    Parameters
+    ----------
+
+        - log_file : str 
+            Url to a log file. It needs to be an absolute url. The class doesnt check prevently if the file exists.
+
+    Raises
+    ------
+
+        - Custom exeception Exception if the class have been declared more thatn once. This class is a singleton.
+
+        - FileExistsError if the file trying to be used for log messages doesnt exists.
+
+        - Custom exception Exception , unknown error if writing log message in file fails.
+
+    Returns
+    -------
+
+        Returns Logs class instance.
+
+    """
 
     __instance=None
 
-    def __init__(self,log_file=None) -> None:
+    def __init__(self,log_file:Optional[str] = None) -> None:
 
         if Logs.__instance != None:
             raise Exception("Logs can only be implemented once")
 
-        self.__message=""
+        self.__message : str=""
         Logs.__instance=self
-        self.__log_file=log_file
+        self.__log_file : str=log_file
         
 
     @staticmethod
     def GetInstance():
+
+        """Returns Logs class instance if exists . If it doesnt exists creates a new instance."""
 
         if Logs.__instance==None:
             Logs("")
@@ -43,7 +79,28 @@ class Logs(MetaLogMessage):
 
 
     
-    def LogMessage(self,message_type,message:str):
+    def LogMessage(self,message_type : str, message : str)->None:
+
+        """Log message method.
+        
+        Description
+        -----------
+
+            Creates a log message. Messages are shown or casted by the console.
+            Each message is compose by a cathegory and a message.
+
+            There are three valid cathegories :
+
+            - warning
+            - error
+            - info
+
+            If the message doesnt contain a valid cathegory it is not casted.
+            Messsages with the cathegory `error` are stored in a log file the log file exists.
+
+            - `example` : `LogMessage("error","some message")`
+
+        """
 
         self.__type=["warning","error","info"]
     
@@ -61,7 +118,7 @@ class Logs(MetaLogMessage):
 
 
 
-    def __SaveLogMessage(self,message):
+    def __SaveLogMessage(self, message : str)->None:
         
         try:
             file=open(self.__log_file,"a")
@@ -91,19 +148,18 @@ class Logs(MetaLogMessage):
 
 
 
-
-#Use for inheritance of for debbugin inner class logic
-@CheckType
-def GetLogInstance(log_file_path=""):
-
-    logs=Int_Logs(log_file=log_file_path)
-
-    return logs
-
-
 #General purpose log method
 @CheckType
 def LogMessage(message:str):
+
+    """Log message method 
+
+    Description:
+    ------------
+
+        General purpose log method.  It doenst store the logs and it is meant just to output logs by console.
+    
+    """
 
     x=datetime.datetime.now()
     Year=str(x.year)
