@@ -17,5 +17,10 @@ stop: docker-compose.yaml
 test: test.py
 
 	chmod +x venv/bin/activate
-	venv/bin/activate
 	python test.py
+
+status:
+
+	docker ps 
+	docker ps -a
+	docker images

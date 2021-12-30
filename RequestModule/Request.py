@@ -1,3 +1,4 @@
+from flask import json
 import requests
 from typing import Optional,Tuple
 from requests import HTTPError
@@ -21,7 +22,7 @@ class Request(IRequest):
 
         General purpose http request module.
         The module is quite simple to use. It accepts 4 types of operations so far.
-        This module is a singleton and can only be implemented once.
+        `This module is a singleton and can only be implemented once.`
 
         - Get
         - Post
@@ -83,15 +84,15 @@ class Request(IRequest):
         return self.__PING(url)
 
 
-    def Get(self,url:str,header : Optional[dict] = None,params : Optional[dict] = None, auth=None)->dict:
+    def Get(self,url:str,header : Optional[dict] = None, query_params : Optional[dict] = None, auth=None)->dict:
 
-        response=self.__GET(url,header=header,params=params,auth=auth)
+        response=self.__GET(url,header=header,params=query_params,auth=auth)
         return self.__ResponseHandler(response)
 
 
-    def Post(self,url:str,header : Optional[dict] = None, params : Optional[dict] = None)->dict:
+    def Post(self,url:str,data : dict, header : Optional[dict] = None, params : Optional[dict] = None)->dict:
 
-        response=self.__POST(url,header=header,data=params)
+        response=self.__POST(url,data = data, header = header, params = params)
         return self.__ResponseHandler(response)
 
 
@@ -140,15 +141,11 @@ class Request(IRequest):
 
 
 
-    def __POST(self,url:str,header:dict=None,data:dict=None):
+    def __POST(self,url:str, data:dict = None, header:dict = None, params:dict = None):
 
         response=""
-        if header==None:
-            self.__LogMessage("info",f"request : {url} {data}")
-            response=requests.post(url,data=data)
-        else:
-            self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {data}")
-            response=requests.post(url,headers=header,data=data)
+        self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {data}")
+        response=requests.post(url,data = data, json = data ,params = params, headers= header)
 
         return response
 
