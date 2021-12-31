@@ -50,8 +50,13 @@ class Request(IRequest):
     Raises
     ------
 
+    - Custom exception Exception .  Error during get FullResponse.
 
-    
+    - JSONDecodeError . Error during json response.
+
+    - Custom exception Exception . Unknown error during handling of json response.
+
+
     """
 
 
@@ -80,13 +85,14 @@ class Request(IRequest):
 
 
     def Ping(self,url:str):
+        """Test if a connection works or an url exists. Returns False if status is 404 or request fails"""
 
         return self.__PING(url)
 
 
-    def Get(self,url:str,header : Optional[dict] = None, query_params : Optional[dict] = None, auth=None)->dict:
+    def Get(self,url:str,header : Optional[dict] = None, query_params : Optional[dict] = None)->dict:
 
-        response=self.__GET(url,header=header,params=query_params,auth=auth)
+        response=self.__GET(url,header=header,params=query_params)
         return self.__ResponseHandler(response)
 
 
@@ -96,9 +102,9 @@ class Request(IRequest):
         return self.__ResponseHandler(response)
 
 
-    def Put(self,url:str,header:dict=None,params:dict=None)->dict:
+    def Put(self,url:str, header:Optional[dict] = None, params:Optional[dict] = None, data:Optional[dict] = None)->dict:
 
-        response=self.__PUT(url,header=header,data=params)
+        response=self.__PUT(url,header=header,params=params,data=data)
         return self.__ResponseHandler(response)
 
 
@@ -109,7 +115,7 @@ class Request(IRequest):
         try:
             result=requests.get(url)
 
-            if result != None:
+            if result != None or result.status_code != 404 :
                 return True
                 
         except HTTPError as httpError: 
@@ -123,7 +129,7 @@ class Request(IRequest):
 
 
 
-    def __GET(self,url:str,header:dict=None,params:dict=None, auth = None):
+    def __GET(self,url:str,header:dict=None,params:dict=None):
 
         response=""
         if params==None :
@@ -134,7 +140,7 @@ class Request(IRequest):
                 response=requests.get(url,params=params)
             else:
                 self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {params}")
-                response=requests.get(url,headers=header,params=params,auth=auth)
+                response=requests.get(url,headers=header,params=params)
         
         return response
 
@@ -152,15 +158,11 @@ class Request(IRequest):
 
 
 
-    def __PUT(self,url:str,header:dict=None,data:dict=None):
+    def __PUT(self,url:str, header:dict = None, params:dict = None, data:dict = None):
 
-        response=""
-        if header == None:
-            self.__LogMessage("info",f"request : {url} {data}")
-            response=requests.put(url,data=data)
-        else:
-            self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {data}")
-            response=requests.put(url,headers=header,data=data)
+        self.__LogMessage("info",f" request : headers:{header} | uri: {url} | params : {params} | data: {data}")
+        response=requests.put(url,headers=header,params=params,data=data)
+
         return response
 
 

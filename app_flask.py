@@ -1,5 +1,5 @@
 from flask import Flask,make_response,request
-from werkzeug.wrappers import response
+
 
 
 
@@ -52,6 +52,19 @@ def testing_post():
     response=make_response(response_structure,200)
     return response
 
+
+@app.route("/testing_put/",methods=["PUT"])
+def testing_put():
+
+    response_structure={
+        "user":request.args.get("user"),
+        "type":request.args.get("type"),
+        "content":{
+            "item": request.form.get("item")
+        }
+    }
+    response=make_response(response_structure,200)
+    return response
 
 if __name__ == "__main__":
 
