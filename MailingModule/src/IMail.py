@@ -20,14 +20,6 @@ class MetaMail(ABC):
 
         raise NotImplementedError    
 
-    @abstractmethod
-    def SendMessage(self,message:dict,password:str)->bool:
-
-        """Send email message once all the parameters are properly configured
-        returns true if the email was successfully sent"""
-
-        raise NotImplementedError
-
     @abstractstaticmethod
     def GetInstance(self):
         """Returns the mail service instance"""

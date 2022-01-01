@@ -6,28 +6,65 @@ import smtplib
 import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from .src.HtmlBlueprints import GetTemplate
-
-
-#Author : Robin Viera 
-# Date : 20/10/2021
-# Descripion : General purpose mailing service . It requires a gmail account available to work properly that
-# grants access to external apps (check google documentation) and the password to such account.
-# It also requires  a port and an smtp client (check readme file). It can use plain text and html templates though 
-# these html templates are kinda tedious to use since using internal <style><style> gives problems and there is no way to
-# add an external css file
-
-# Last update : None
-# version 1.0
-# tested : No
+from .src.HtmlTemplates import GetTemplate
 
 
 
 class MailService(MetaMail):
 
+    """ General purpose mailing service
+
+    Author : Robin Viera 
+    Date : 20/10/2021
+    Last update : 31/12/2021
+    version 1.0
+    tested : yes (unstable)
+
+    Description
+    -----------
+
+    General purpose mailing service . It requires a gmail account available to work properly that
+    grants access to external apps (check google documentation) and the password to such account.
+    It also requires  a port and an smtp client (check readme file). It can use plain text and html templates though 
+    these html templates are kinda tedious to use since using internal <style><style> leads to problems and there is no way to
+    add an external css file.
+
+
+    Parameters
+    ----------
+
+        - port:int (required)
+            Usually 465 for most smtp servers
+
+        - server_host:str (required)
+            smtp.gmail.com when using gmail hosts
+
+        - server_login:str (required)
+            somegmailaccount@gmail.com
+
+    Raises
+    ------
+
+        - SMTPHeloError . Server invalid response.
+
+        - SMTPAuthenticationError . Wrong user or password error.
+
+        - Custom exception Exception. Cannot connect to server.
+
+    
+
+    """
+
     __instance = None
 
-    def __init__(self, port: int, server_host: str, server_login: str) -> None:
+    def __init__(self, port: int, server_host: str="smtp.gmail.com", server_login: str = "somegmailaccount@gmail.com") -> None:
+
+        """Initialize mailing service.
+
+        port : 465 
+        server_host : smtp.gmail.com 
+        server_login : somegmailaccount@gmail.com . Account used as reference for the mailing service
+        """
 
         self.credentials = {}
         self.credentials["port"] = port
@@ -56,7 +93,15 @@ class MailService(MetaMail):
 
 
 
-    def CreateMessage(self, sender: str, receiver: str,subject:str, message: str = "",template:str="formal") -> dict:
+    def CreateMessage(self, sender: str, receiver: str,subject:str, password:str, message: str = "", template:str = None) -> bool:
+        """Creates an email message
+
+        - sender : email of the sender
+        - receiver : email of the target 
+        - subject :  subject of the email
+        - message : message of the email
+        - password : host service password
+        """
 
         if message == "":
             message = "TEST"
@@ -82,24 +127,19 @@ class MailService(MetaMail):
         message_base.attach(plain_text)
         message_base.attach(html_text)
 
-        return message_base
+        return self.__CreateSecureSMTPConnection(self.credentials,message_base,password)
 
 
 
-
-
-    def SendMessage(self,message: dict,password) -> bool:
+    def __CreateSecureSMTPConnection(self, credentials: dict, message: dict,password:str) -> smtplib.SMTP_SSL:
 
         if type(message) is not MIMEMultipart:
             print("Wrong message format . Format must be MIMEMultipart class type")
             return False
 
-        self.__CreateSecureSMTPConnection(self.credentials,message,password)
-
-
-
-
-    def __CreateSecureSMTPConnection(self, credentials: dict, message: dict,password:str) -> smtplib.SMTP_SSL:
+        if type(message) is not MIMEMultipart:
+            print("Wrong message format . Format must be MIMEMultipart class type")
+            return False
 
         if type(credentials["port"]) is not int:
             return False
@@ -123,20 +163,17 @@ class MailService(MetaMail):
         except smtplib.SMTPHeloError:
 
             print("Server didnt respond properly")
+            return False
 
         except smtplib.SMTPAuthenticationError as err:
 
             print(f"Server wrong user or password : {err}")
+            return False
 
         except Exception as err:
 
             print(f"Unknown error . Cannot stablish secure connection : {err}")
+            return False
+        
+        return True
 
-
-
-
-    def StartDebbugingServer(self, url: str = "localhost", port: int = 1025):
-
-        command = f"python3 -m smtpd -c DebuggingServer -n {url}:{port}"
-        print(f"Server online {url}:{port}")
-        os.system(command)

@@ -3,11 +3,15 @@ from unittest.case import TestCase
 from TreeGeneratorLiteModule.DirectoryTreeGenerator import TreeExplorer
 from LogMessageModule.Logs import Logs,LogMessage
 from RequestModule.Request import Request
+from MailingModule.Mail import MailService
 import os
 
-class Test_Modules(unittest.TestCase):
+class Test_Modules(TestCase):
 
+    #declaration-----------
     r=Request()
+    m=MailService(465,server_host="smtp.gmail.com",server_login="pythonappservicemail@gmail.com")
+    #----------------------
 
     def test_tree_generator_lite_module(self):
         path=os.getcwd()
@@ -100,18 +104,23 @@ class Test_Modules(unittest.TestCase):
 
     def test_request_get_stock_api(self):
 
-
         url="http://api.marketstack.com/v1/tickers"
         params={
             "access_key":"c35605a7a56902a311f5a899cfc1f134",
         }
-        r=Request()
-        resp=r.Get(url,header=None,params=params)
+        resp=self.r.Get(url,header=None,query_params=params)
         self.assertTrue(resp.get("status")==200," Request failed")
         self.assertTrue(type(resp.get("json")) is dict , "Cannot find response content, request failed")
 
+
     def test_mailing_module(self):
-        pass
+
+        # currently it doesnt work
+        message="""Testing mailing service smtp/localhost port 1025 ---> stmp.gmail.com """
+        result=self.m.CreateMessage("localhost@test.com","robinviera@hotmail.com","localhost_unittest","pythonappservice",message=message)
+        self.assertTrue(result==False,"Cannot send mail, smtp server failed")
+        
+
 
 
 if __name__ == "__main__":
