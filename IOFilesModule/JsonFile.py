@@ -25,7 +25,7 @@ class JsonFile(MetaFile):
         
         JsonFile.__instance=self
         self.file_buffer=None
-        self.__path=path
+        self.path=path
         self.__logs=logs
         self.__modes=["r","w"]
 
@@ -44,7 +44,7 @@ class JsonFile(MetaFile):
 
     def _FileExist(self) -> bool:
         
-        return os.path.isfile(self.__path)
+        return os.path.isfile(self.path)
 
 
 
@@ -61,8 +61,8 @@ class JsonFile(MetaFile):
 
         try:
 
-            self.file_buffer=open(self.__path,mode)
-            self.LogMessage(f"Access to file : {self.__path}","info")
+            self.file_buffer=open(self.path,mode)
+            self.LogMessage(f"Access to file : {self.path}","info")
             return True
 
         except FileExistsError as err:

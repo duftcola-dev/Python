@@ -52,6 +52,7 @@ class HouseBuilder(Builder):
         self.reset()
         return product
 
+
     def wall(self)->None:
         
         self.__product.add("Wall")
