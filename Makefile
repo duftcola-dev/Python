@@ -1,18 +1,18 @@
 hello:
 	echo "hello world"
 
-build: Dockerfile
+build: 
 
-	docker build -t flask_test_server:latest .
-	docker-compose build
+	cd ./flask ; docker build -t flask_test_server:latest .
+	cd ./flask ; docker-compose build
 
-run : docker-compose.yaml
+run :
 
-	docker-compose up -d
+	cd ./flask ; docker-compose up -d
 
 stop: docker-compose.yaml
 
-	docker-compose down
+	cd ./flask ; docker-compose down
 
 test: test.py
 
