@@ -8,4 +8,4 @@ new :
 
 run :
 
-	. venv/bin/activate ; cd ./mysite ; manage.py runserver
+	. venv/bin/activate ; cd ./mysite ; python manage.py runserver
