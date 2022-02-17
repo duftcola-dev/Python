@@ -212,6 +212,101 @@ example :
             
             ** link id + segment url meetup_slug coming from dynamic data
 
+
+
+#Database and model creation : 
+
+    **models are representations of tables in my sqlite that comes by default with django
+    ** in order to create a model create a class in meetups_app/models :
+
+    class meetup(models.Model):
+
+        id = models.BigAutoField(primary_key=True)
+        title  = models.CharField(max_length=200)
+        slug = models.SlugField(unique=True)
+        description = models.TextField(max_length=1000)
+
+    **this class will represent a table with fields specified in the class
+    ** id = models.BigAutoField(primary_key=True) defines id as an autoincrement primary key
+
+# Create database tables from models
+
+    **once your models have been created you can turn them into tables by executing the command:
+
+        python manage.py makemigrations   <--- this will create a table for each model and their relations
+        python manage.py migrate <-- this will add the tables to the database
+       
+
+# use the admin console
+
+    ** you can manage certain aspects of your app with admin console by running you server and
+    ** accesing the admin console form you browser:
+
+        localhost/admin   <-- notice you cannot access initially this since you first need to create a super user
+
+    *** to create a super user run the command : 
+
+        python manage.py createsuperuser
+
+    ** complete the registering process and now you can access the admin console
+
+
+# manage models from admin console 
+
+    **in order to manage your models with the admin console you models need to be registered at ehte admin.py file in 
+
+    mysite/meetups_app/admin.py : 
+
+        from .models import meetup
+        
+        admin.site.register(meetup)
+
+
+# make queries to the datbase using models
+
+    ** first import the model to your view
+    ** meetups_app/views
+
+    from .models import meetup
+
+    data = meetup.objects <--- objects is a property inherited by the models class
+
+    ** objects allows us to make queries
+
+    example : 
+
+            data = meetup.objects.all()  <--- equivalent in SLQ to SELECT * FORM MEETUP
+
+    ** and spesific value  : 
+
+            data = meetup.objects.get(id=some_id) <--- we search matches based on keys
+            
+            or
+
+            data = meetup.objects.get(slug=some_slud_data)
+
+            ** remember that one of the arguments in the model was id
+            ** it is advisable to warp the queries wiht try-exept blocks ** 
+
+    ** creating new entries in the database : 
+
+        data = new Meetup(args="stuff",args2="more_stuf") <--- notice the models do not need a __init__ method to be initilyzed
+        data.save()
+
+
+    **deleting objects : 
+
+        meetup.delete() <---returns the deleted objects
+
+    ** delete with filters : 
+
+        result = meetup.objects.get(id=12)
+        result.delete()
+
+    ** delete all :
+
+        meetup.objects.all().delete()
+    
 # run servers
 
     python manage.py runserver

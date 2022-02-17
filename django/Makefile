@@ -9,3 +9,14 @@ new :
 run :
 
 	. venv/bin/activate ; cd ./mysite ; python manage.py runserver
+
+database : 
+
+	. venv/bin/activate ; cd ./mysite ; python manage.py makemigrations
+	. venv/bin/activate ; cd ./mysite ; python manage.py migrate
+
+admin:
+
+	. venv/bin/activate ; cd ./mysite ; python manage.py createsuperuser
+
+

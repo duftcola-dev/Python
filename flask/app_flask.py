@@ -1,16 +1,16 @@
 from flask import Flask,make_response,request,url_for,redirect
-
-
-
+from users.routes import users
+from config.config import myconfig
+# testing blueprints 
 
 app=Flask(__name__)
-
+app.config.from_object(myconfig)
 
 
 @app.route("/")
 def index():
 
-    return " IT WORKS"
+    return " IT WORKS"+str(app.config.get("PORT"))
 
 
 @app.route("/testing_get",methods=["GET"])
@@ -79,6 +79,10 @@ def testing_put():
     }
     response=make_response(response_structure,200)
     return response
+
+# using blueprint ---> similar to router in nodejs
+
+app.register_blueprint(users) # registering the users blueprint
 
 
 if __name__ == "__main__":
