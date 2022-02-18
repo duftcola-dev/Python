@@ -1,10 +1,23 @@
+from crypt import methods
+from email.message import Message
 from flask import Flask,make_response,request,url_for,redirect
+from flask_mail import Mail,Message
 from users.routes import users
 from config.config import myconfig
 # testing blueprints 
 
 app=Flask(__name__)
 app.config.from_object(myconfig)
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'duftcoladev@gmail.com'
+app.config['MAIL_PASSWORD'] = 'pythontestservice'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+#configuring mail 
+
+mail = Mail()
+mail.init_app(app)
 
 
 @app.route("/")
@@ -81,8 +94,19 @@ def testing_put():
     return response
 
 # using blueprint ---> similar to router in nodejs
-
 app.register_blueprint(users) # registering the users blueprint
+#now the routes created in the blueprint users can be used
+
+
+#using flask mailing service
+@app.route("/mail/<string:message>",methods=["GET"])
+def send_main(message):
+    print(message)
+    msg = Message("From flask :"+message,sender= "testingFlask@app.com",recipients = ["robinviera@hotmail.com"])
+    msg.body="testing"
+    msg.html="<p>some html</p>"
+    mail.send(msg)
+    return "mail sent "
 
 
 if __name__ == "__main__":
