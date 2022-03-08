@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "ebc38a3c-a1b9-4eed-a6d9-0ddd97f7a417",
+		"name": "flask_sql",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/status",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_vehicles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/get_vehicles",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"get_vehicles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_vehicle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/get_vehicle?matricula=123ad31",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"get_vehicle"
+					],
+					"query": [
+						{
+							"key": "matricula",
+							"value": "123ad31"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update_vehicles_state",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Values Successfully Updated\",function(){",
+							"    let values = [\"123ad31\",\"12dwee3\",\"2123d23\",\"f81723d\"]",
+							"    let dataset = response.data;",
+							"    let values_check = values.length;",
+							"",
+							"for (let i of dataset){",
+							"  for (let x of values){",
+							"    if(x===i[ \"matricula\"]){",
+							"      values_check-=1;",
+							"    }",
+							"    if (values_check == 0){",
+							"      break;",
+							"    }",
+							"  }",
+							"}",
+							"console.log(values_check);",
+							"pm.expect(values_check).to.equal(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/update_vehicles_state",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"update_vehicles_state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_positions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/get_positions",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"get_positions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
