@@ -1,6 +1,6 @@
 
 #Builder desing pattern.
-# The builder patter arises from the need when we a base class to be able
+# The builder patter arises from the need when we have a base class to be able
 # extend its functionalities without having to create a large amount of subclasses while also
 # being very flexible in the type of new functionalities that it needs to adquire.
 
@@ -28,8 +28,41 @@ from __future__ import annotations
 from abc import ABC,abstractmethod
 from typing import Any 
 
-from builder import Builder
-from house import HouseType1
+from abc import ABC,abstractmethod
+
+class Builder(ABC):
+
+    @property
+    @abstractmethod
+    def get_product(self)->None:
+        pass
+
+    @abstractmethod
+    def wall(self)->None:
+        pass
+
+    @abstractmethod
+    def door(self)->None:
+        pass
+    
+    @abstractmethod
+    def roof(self)->None:
+        pass
+
+    def floor(self)->None:
+        pass
+    
+class HouseType1():
+
+    def __init__(self) -> None:
+        self.parts=[]
+
+    def add(self,part:str):
+        self.parts.append(part)
+
+    def list_parts(self)->None:
+        print(self.parts)
+
 
 
 
