@@ -1,6 +1,6 @@
 REDIS:
 
-#HOW TO USER REDIS
+#HOW TO USE REDIS
     *start the redis server :
         - redis-server
     *enter in the redis shell :
@@ -350,4 +350,19 @@ services:
     find                    Selects documents in a collection or view.
 
 
+-------------------------------------------------------------------------------
 
+MYSQL
+
+# HOW TO USER MYSQL
+
+    *open mysql shell in the docker container
+        -   docker exec -it <container_name> bash
+    *authenticate
+        - mysql -u root -p 
+    *introduce password 
+    *select a database
+    USE <database_name>
+
+** for additional docuemtnation about instructions and commands consult mysql documentation
+    in w3shcool.com
