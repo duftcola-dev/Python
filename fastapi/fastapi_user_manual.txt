@@ -1,0 +1,100 @@
+INSTALLATION 
+
+    create a venv 
+    install using pip :
+        fastapi
+        pydantic
+        uvicorn>[standard]
+    activate your venv 
+    run :
+        uvicorn main:app --reload
+
+---------------------------------------------------------
+
+BASIC APP 
+
+    from typing import Optional
+    from fastapi import FastAPI
+
+    app = FastAPI()
+
+
+    @app.get("/")
+    async def read_root():
+        return {"Hello": "World"}
+
+TESTING and api  documentation
+    ** user the following url lunch an api test enviroment
+    http://127.0.0.1:8000/docs.
+
+---------------------------------------------------------------------------------
+
+PATH 
+
+    #basic path 
+    @app.get("/user")
+    async def get_user():
+
+        return "something"
+
+    #path with parameters 
+    @app.get("/user/{id}")
+    async def get_user(id:str):
+
+        return f"user_id{id}"
+
+    ** adding type to parameters adds type check functionality by default --> id:str
+    ** the funciton will always check the id param is type str
+
+-----------------------------------------------------------------------------------------------------------
+
+PATH + MODELS  # models are custom datatypes or schemes used to enforce structures in request and responses
+
+
+    example 
+
+    from enum import Enum 
+
+    class ModelNames(str,Enum):
+
+        robin = "robin"
+        ruth = "ruth"
+        something = "somthing"
+
+    @app.get("user/{model_name}")
+    async def get_name(model_name : ModelNames): 
+        if model_name == ModelNames.robin:
+            reuturn {"name":ModelNames.robin}
+
+    ** this will enforce the request param be the type ModelNames
+
+---------------------------------------------------------------------------
+
+PATH + QUERY PARAMS
+
+** example of a request with query parameters
+ 
+    @app.get("/items/")
+    async def get_items(item:int , limit:int =10):
+        return  {"items":item, "limit":limit}
+
+        **params not declared in the path are automatically intrepreted as query params
+        ** you can user path and query params at the same time fastapi knows which is which
+        ** the the param has a default value like limit:int = 10  the is and optional param
+        ** if not is a required param like item
+
+example:
+
+    @app.get("/items/{user}")
+    async def get_items(item:int ,user, limit:int =10):
+        return  {"items":item, "limit":limit,"user":user}
+
+-------------------------------------------------------------------------------------------------
+
+PATH + BODY PARAMS  
+
+    from pydantic import BaseModel
+
+    class item(BaseModel):
+        name : str
+        description: str | None = None

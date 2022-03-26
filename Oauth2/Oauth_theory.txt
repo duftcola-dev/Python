@@ -1,0 +1,99 @@
+Oauth is a standard for sharing information accorss sites / apis 
+In the Oauth authentication process there are the following roles :
+
+    - Owner : user the gives autorization to certain app
+    - Client : app that accesess the user account. Requires autorization from the user (Owner)
+    - Resource Server: Manages autorization requests
+    - Authorization server : Host the protected resources the owner wants to accesess
+
+    ** Reource Server and Autorization Server maybe the same entity or separated entities. 
+    There is also the case that an Autorization Server can provide tokens for several resource servers.
+
+    +++++++ To see Oauth workflow see Oauth_workflow.pdf +++++++
+
+Types of authorization (grant types)
+
+    *Represents the source owner autorization to access the protected resources. 
+    This specification defines four grant types.
+
+        - authorization code
+        - implicit (implicit login)
+        - resource owner credentials
+        - client credentials
+
+
+    # authorization code :
+
+        It is optained by using an autorization server as intermidiary between the
+        client and the resource server.
+        The client redirects the resource owner to the autorization server wich redirects the 
+        the resource owner back to the client with and autorization code. The the client can use that 
+        autorization code to request an access token to the resource owner that the client will use to 
+        acess the resources : 
+
+        ** when we say the autorization server authenticates the client we mean 2 factor authentication
+
+            1) client ask for resource
+            2) client redirects resource owner to autorization server where the client is authenticated(2 factor)
+            3) autorization server returns autorization code to resource owner
+            3) resource owner return autorization code to client 
+            4) client uses autorization code to reques access token to rersource server 
+            5) client users acess to token to access resources in resource server
+
+    # implicit grant 
+
+        It is a simplified autorization code flow. The autorization server returns an access token direcly to client.
+        The autorization server does not authenticate the client (2 factor).The access token may be exposed
+        to the resource owner of other applications to the resource owner.
+        
+        1) client request access token to autorization server
+        2 client uses token to access  resources in resource server
+
+    # resource owner password credentials (AKA user name and password)
+
+        Can be used directly in the resource owner in order to optain and access token.
+        This method should only be used when there is a high degree of trust between the resource owner and the client.
+        ( the client is part of the operating system or a highly privileged client)
+
+        * the resource owner has the credentials 
+        * the client access through the credentials and gets in returns an access token
+        * the credentials are used a single time in exchange for an access token
+        * additional request are validated by the access token
+        * the client doesnt store the credentials
+
+    # client credentials
+
+        The client credentials (or other forms of client authentication) can
+        be used as an authorization grant when the authorization scope is
+        limited to the protected resources under the control of the client,
+        or to protected resources previously arranged with the authorization
+        server.  Client credentials are used as an authorization grant
+        typically when the client is acting on its own behalf (the client is
+        also the resource owner) or is requesting access to protected
+        resources based on an authorization previously arranged with the
+        authorization server.
+
+        * the client uses its own credentials to access the resource owner
+        * the client has access to a limited amount of resources previously arranged 
+          by the autorization server
+
+
+Access token and refresh token
+
+    Access tokens are credentials used to access protected resources.
+    Tokens represent specific scopes and durations of access.
+
+    * A token may represent the autorization information.
+    * A token may contain the autorization information AKA data and signature
+
+    Refresh tokens are credentials used to optain access tokens.
+    Refresh tokens are issued to the client by the autorization server and are used
+    to optain a new access token when the current token expires or to optain new access tokens
+    with different scope.
+
+    * refresh tokens are used only with the autorization server .
+    * refresh tokens are nevers sent to the resource server. 
+
+    +++++ for more information check refreshing_access_token.pdf +++++
+
+Client registration
