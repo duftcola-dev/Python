@@ -97,4 +97,126 @@ PATH + BODY PARAMS
 
     class item(BaseModel):
         name : str
-        description: str | None = None
+        description: Optional [str] = None
+        price : float  
+        tax: float
+
+    @app.post("/items/")
+    async def create_item(item:item):
+        return item
+
+    ** params are taken from the body automatically with post request
+    ** the request spects the params enfoced by the item model
+
+PATH + BODY PARAMS VALiDATION
+
+    from pydantic import BaseModel,field
+
+        class item(BaseModel):
+            name : str
+            description: Optional [str] = Field(None,title = "description of item" , max_lengh = 100)
+            price : float  
+            tax: float
+
+            ** param description will be check to have a max lenght of 100 chars
+
+        @app.post("/items/")
+        async def create_item(item:item):
+            return item
+
+
+PATH + BODY PARAMS  + NESTED MODLES
+
+    from typing import List, Optional
+    from fastapi import FastAPI
+    from pydantic import BaseModel
+
+    class Image(BaseModel):
+        url: str
+        name: str
+
+    class Item(BaseModel):
+        name: str
+        description: Optional[str] = None
+        price: float
+        tax: Optional[float] = None
+        tags: List[str] = []
+        tags_2 : Set[str] = set()
+        image: Image = None
+
+    ** List is a model nested within a model
+
+    @app.put("/items/{item_id}")
+    async def update_item(item_id: int, item: Item):
+        results = {"item_id": item_id, "item": item}
+        return results
+
+------------------------------------------------------------------- 
+
+DEFINE SPECTED SCHEMAS
+
+    class Item(BaseModel):
+        name: str
+        description: Optional[str] = None
+        price: float
+        tax: Optional[float] = None
+        class Config:
+            schema_extra = {
+                "example": {
+                    "name": "Foo",
+                    "description": "A very nice Item",
+                    "price": 35.4,
+                    "tax": 3.2,
+                }
+            }
+
+            ** schema_extra defines how the information of the request must be structured
+            ** you add different options of incoming data with the key workd "examples" :
+
+    class Item(BaseModel):
+        name: str
+        description: Optional[str] = None
+        price: float
+        tax: Optional[float] = None
+        class Config:
+            examples={
+            "normal": {
+                "summary": "A normal example",
+                "description": "A **normal** item works correctly.",
+                "value": {
+                    "name": "Foo",
+                    "description": "A very nice Item",
+                    "price": 35.4,
+                    "tax": 3.2,
+                },
+            },
+            "converted": {
+                "summary": "An example with converted data",
+                "description": "FastAPI can convert price `strings` to actual `numbers` automatically",
+                "value": {
+                    "name": "Bar",
+                    "price": "35.4",
+                },
+            },
+
+
+    @app.put("/items/{item_id}")
+    async def update_item(item_id: int, item: Item):
+        results = {"item_id": item_id, "item": item}
+        return results
+
+
+-----------------------------------------------------------
+
+GET HEADER DATA 
+
+    from fastapi import FastAPI ,Header 
+    @app.get("/items/")
+    async def read_items(headers: Optional[str] = Header(None)):
+        return {"User-Agent": headers}
+
+    ** this will add all the header parameters to the param headers
+
+--------------------------------------------------------------------------
+
+RESPONSE MODEL
