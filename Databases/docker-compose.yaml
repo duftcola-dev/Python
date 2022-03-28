@@ -7,7 +7,6 @@ networks:
     name: default_network
 
 services:
-
   mongo:
     image: mongo:latest
     container_name: mongo_service
