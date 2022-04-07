@@ -1,0 +1,104 @@
+GENERATING PYTHON DOCUMENTATION WITH SPHINX
+
+
+
+INSTALLATION :
+     pip install -U sphinx
+
+USER MANUAL:
+
+    # start by creating a doc/ folder in you project folder and cd into that folder
+    # create and additional folder doc inside doc --> /doc/doc where the documentation will be saved
+    # initialize sphinx :
+
+            sphinx-quickstart
+
+            ** you can skip most of the questions by entering enter
+            
+    # open the following files created by sphinx : 
+
+        - conf.py 
+        - index.rst
+
+-----------------------------------------------
+CONF.PY
+------------------------------------------------
+    # in conf.py uncomment lines 13 to 15
+
+        import os
+        import sys
+        sys.path.insert(0, os.path.abspath('.'))
+        sys.path.append("../source")   ** the the path of your project dir to the path
+        
+        
+    # in project information below add the version of your project
+
+        project = 'test_documentation'
+        copyright = '2022, Robi'
+        author = 'Robi'
+        version = u'1.0.0'
+        
+    # add some extensions in General configuration
+
+        extensions = [
+        "sphinx.ext.autodoc",
+        "sphinx.ext.napoleon"
+    ]
+
+----------------------------------------------------------------
+INDEX.RTS
+----------------------------------------------------------------
+
+    # add the word modules
+
+example :
+
+    Welcome to test_documentation's documentation!
+==============================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+
+   modules
+
+
+
+DOCUMENTING MULTIPLE MODULES 
+
+        vim index.rtc
+
+        ** ad "modules" to the list :
+
+        Welcome to documentation test's documentation!
+==============================================
+
+    .. toctree::
+        :maxdepth: 2
+        :caption: Contents:
+        modules
+
+    
+BUILDING DOCUMENTATION
+
+    # run the command :
+
+        sphinx-apidoc -o ./doc ../source
+
+        **sphinx-apidoc - o <destination> <source>
+        **sever .rts files should be creted in doc/doc
+        ** this are documentation files
+    
+    # turn documentation files into html documentation:
+
+        make html
+
+
+    # run in the browser
+
+        google-chrome  _build/html/index.html
+
+            or
+
+        firefox _build/html/index.html
