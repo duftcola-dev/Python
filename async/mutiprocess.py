@@ -20,7 +20,7 @@ def download_site(url):
 
 def download_all_sites(sites):
     try:
-        process_pool = multiprocessing.Pool(initializer=set_global_session) # pricess initlization params
+        process_pool = multiprocessing.Pool(initializer=set_global_session) # process initlization params
         process_pool.map(download_site, sites) #procesess bulk execution
     except Exception as err:
         print("mutiprocess failed")
