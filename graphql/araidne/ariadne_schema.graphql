@@ -1,0 +1,11 @@
+type Query{
+    status: String!
+}
+
+type User{
+    name: String!
+    id: ID 
+    status: String!
+    registration: Int!
+}
+
