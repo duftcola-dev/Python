@@ -1,0 +1,46 @@
+SCRIPTING WITH PYTHON
+
+# This folder is a case study for python scripting features.
+--------------------------------------------------------------
+
+PYHTON FILE OUTPUT
+
+python files can be executed to write their output to a txt file 
+for further analysis. This process is known as stream redirection
+
+    python main.py > result.txt
+
+    ** to append the output to consecutive executions (append)
+    use >> : 
+
+    python main.py >> result.txt
+
+-----------------------------------------------------------------
+RUNNING PYTHON SCRIPTS 
+
+# most common way to run python scripts :
+
+    import os
+    result = os.system("insert_command_here")
+
+    ** result = 0 if command was successfull , -1 if command failed
+    **example : 
+
+    import os
+    result = os.system("touch myfile.txt")
+
+------------------------------------------------------------
+RUNNING NESTED PYTHON SCRIPTS
+
+# main.py
+
+    import os
+    print("executing script in main file)
+    result = os.system("some scrpting")
+    exec(open("install_flask.py").read()) ** this runs the file install_flask.py 
+
+            or ** you can also can do:
+    
+    result = os.system("python install_flask.py > installation.txt")
+    ** this way you can also execute the script and redirect the
+       output stream to a .txt file
