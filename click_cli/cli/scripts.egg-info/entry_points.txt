@@ -1,0 +1,6 @@
+[console_scripts]
+config = scripts.config:config
+execute = scripts.execute:execute
+load = scripts.config:load_config
+reset = scripts.config:reset_config
+
