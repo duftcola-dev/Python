@@ -40,9 +40,6 @@ class Request(IRequest):
 
     Parameters
     ----------
-
-    - configuration : dict (optional)
-        Configuration file content as a dict.
     
     - log : log_message_instance (optional)
         Instance of log message class.
@@ -62,17 +59,13 @@ class Request(IRequest):
 
     __instance=None
 
-    def __init__(self,configuration:Optional[dict] = None, log : Optional[object] = None) -> None:
+    def __init__(self,json_response:bool = True, log:Optional[object] = None) -> None:
 
         if Request.__instance != None:
             raise Exception("Request instance can only be implemented once!")
     
-        self.__json_response : bool=False
+        self.__json_response : bool=json_response
         self.__logs=log
-        self.__configuration_field : str="request"
-        self.__configuration_subfield : Tuple=("json_response","True")
-        self.__GetConfiguration(configuration)
-
         Request.__instance=self
 
 
@@ -207,29 +200,6 @@ class Request(IRequest):
 
             self.__LogMessage("error","Request module -> Unknown error on json decoding operation")
             return False
-
-
-
-    def __GetConfiguration(self,configuration):
-
-        if configuration==None or type(configuration) is not dict:
-            self.__LogMessage("info","Request module -> no configuration provided")
-            return
-
-        http_configuration=configuration.get(self.__configuration_field)
-
-        if http_configuration == None:
-            self.__LogMessage("warning","Request module -> Configuration not found")
-            return
-
-        if http_configuration.get(self.__configuration_subfield[0],None)==self.__configuration_subfield[1]:
-
-            self.__json_response=True
-            self.__LogMessage("info","Request module -> configuration loaded. Set to format json reponse")
-        else:
-            self.__LogMessage("warning","Request module -> Response type format configuration not found")
-
-
 
 
     def __LogMessage(self,message_type,message):
