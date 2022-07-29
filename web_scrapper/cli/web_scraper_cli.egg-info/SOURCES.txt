@@ -1,0 +1,7 @@
+setup.py
+web_scraper_cli.egg-info/PKG-INFO
+web_scraper_cli.egg-info/SOURCES.txt
+web_scraper_cli.egg-info/dependency_links.txt
+web_scraper_cli.egg-info/entry_points.txt
+web_scraper_cli.egg-info/requires.txt
+web_scraper_cli.egg-info/top_level.txt
