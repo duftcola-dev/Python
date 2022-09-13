@@ -1,0 +1,10 @@
+<h1>Listing elements from a table</h1>
+{{ table_items }}
+
+<ul>
+{% for item in table_items %}
+    <li>
+    <p>{{item.name}}</p>
+</li>
+{%endfor%}
+</ul>

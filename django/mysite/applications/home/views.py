@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,HttpRequest,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
+from .models import Test
 import json
 # Create your views here.
 
@@ -46,3 +47,19 @@ class TestView(View):
         print(payload)
 
         return  JsonResponse(payload,status=201)
+
+
+# return info from a table
+class ModelTestView(View):
+
+
+    def get(self,request):
+        model = Test
+        template_name = "home/test.html"
+        query = Test.objects.all()
+        data = query.values()
+        context={
+            "table_items":data
+        }
+
+        return render(request,template_name,context)
