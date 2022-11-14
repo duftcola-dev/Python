@@ -3,7 +3,7 @@ Flask app + mysql
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ATENTION USER ! 
-    **In roder to work this app requires the follogin deppendencies  :
+    **In order to work this app requires the following deppendencies  :
         - Docker 
         - Docker-Compose
         - Npm
